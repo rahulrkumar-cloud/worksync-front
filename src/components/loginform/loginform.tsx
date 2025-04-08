@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Cookies from "js-cookie";
 import { API_BASE_URL } from '@/config/api';
 import { useAuth } from '@/context/TokenProvider';
+import Link from 'next/link';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -137,13 +138,14 @@ const Login: React.FC = () => {
 
           {/* Sign Up Link */}
           <div className="text-center text-sm pt-2">
-            <span className="text-gray-700 dark:text-gray-300">Don't have an account? </span>
-            <span
-              onClick={() => router.push("/signin")}
-              className="text-blue-500 hover:underline cursor-pointer"
-            >
-              Sign Up
+            <span className="text-gray-700 dark:text-gray-300">
+              Don&apos;t have an account?
             </span>
+
+
+            <Link href="/signin" className="text-blue-500 hover:underline cursor-pointer">
+              Sign Up
+            </Link>
           </div>
         </form>
       </div>

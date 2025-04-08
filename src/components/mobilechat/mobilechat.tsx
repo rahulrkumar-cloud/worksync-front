@@ -148,13 +148,26 @@ export default function Mobilechat() {
                     <div className="flex-1 overflow-y-auto">
                         <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
                             {users.map((user) => (
+                                // <li
+                                //     key={user.id}
+                                //     className="p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+                                //     onClick={() => setSelectedUser(user)}
+                                // >
+                                //     {user.name}
+                                // </li>
                                 <li
                                     key={user.id}
                                     className="p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
                                     onClick={() => setSelectedUser(user)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter" || e.key === " ") setSelectedUser(user);
+                                    }}
+                                    role="button"
+                                    tabIndex={0}
                                 >
                                     {user.name}
                                 </li>
+
                             ))}
                         </ul>
                     </div>
@@ -188,20 +201,20 @@ export default function Mobilechat() {
                     >
                         {selectedMessages.map((msg, i) => (
                             <div
-                            key={i}
-                            className={clsx(
-                              "max-w-xs px-4 py-2 rounded-lg text-sm break-words",
-                              msg.senderId === currentUserId
-                                ? "ml-auto bg-blue-500 text-white"
-                                : "mr-auto bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white"
-                            )}
-                          >
-                            <div className="flex flex-col gap-1">
-                              <span className="break-words whitespace-pre-wrap">{msg.text}</span>
-                              <span className="text-xs text-gray-400 self-end">{msg.currenttime}</span>
+                                key={i}
+                                className={clsx(
+                                    "max-w-xs px-4 py-2 rounded-lg text-sm break-words",
+                                    msg.senderId === currentUserId
+                                        ? "ml-auto bg-blue-500 text-white"
+                                        : "mr-auto bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white"
+                                )}
+                            >
+                                <div className="flex flex-col gap-1">
+                                    <span className="break-words whitespace-pre-wrap">{msg.text}</span>
+                                    <span className="text-xs text-gray-400 self-end">{msg.currenttime}</span>
+                                </div>
                             </div>
-                          </div>
-                          
+
                         ))}
                         <div ref={messagesEndRef} />
                     </div>

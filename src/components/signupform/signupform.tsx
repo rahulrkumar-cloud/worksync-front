@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/config/api";
+import Link from "next/link";
 const SignupForm: React.FC = () => {
     const router = useRouter();
     const [formData, setFormData] = useState({
@@ -245,12 +246,9 @@ const SignupForm: React.FC = () => {
                     {/* Login link */}
                     <div className="text-center text-sm sm:text-base mt-2">
                         <span className="text-gray-700 dark:text-gray-300">Already have an account? </span>
-                        <a
-                            onClick={() => router.push("/login")}
-                            className="text-blue-500 hover:underline cursor-pointer"
-                        >
+                        <Link href="/login" className="text-blue-500 hover:underline cursor-pointer">
                             Login
-                        </a>
+                        </Link>
                     </div>
                 </form>
             </div>
