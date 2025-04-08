@@ -173,7 +173,7 @@ export default function DesktopChat() {
   useEffect(() => {
     if (!currentUserId) return;
 
-    const newSocket = io("https://worksync-socket.onrender.com", {
+    const newSocket = io("http://localhost:5000", {
       transports: ["websocket"],
     });
 
@@ -197,6 +197,7 @@ export default function DesktopChat() {
       if (!token) return;
       try {
         const res = await fetch(`${API_BASE_URL}/users`, {
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -218,21 +219,42 @@ export default function DesktopChat() {
 
       try {
         const res = await fetch(`${API_BASE_URL}/messages/${selectedUser.id}`, {
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
         if (!res.ok) throw new Error("Failed to fetch messages");
-        const data = await res.json();
-        const transformed = data.map((msg: any) => ({
+
+        const rawData: {
+          id: number;
+          sender_id: number;
+          receiver_id: number;
+          message: string;
+          created_at: string;
+        }[] = await res.json();
+
+        const transformed1: Message[] = rawData.map((msg) => ({
           text: msg.message,
           senderId: String(msg.sender_id),
           currenttime: new Date(msg.created_at).toISOString().slice(11, 19),
         }));
+
+
+        // const data = await res.json();
+        // const transformed = data.map((msg: any) => ({
+        //   text: msg.message,
+        //   senderId: String(msg.sender_id),
+        //   currenttime: new Date(msg.created_at).toISOString().slice(11, 19),
+        // }));
+        // setMessages((prev) => ({
+        //   ...prev,
+        //   [selectedUser.id]: transformed,
+        // }));
         setMessages((prev) => ({
           ...prev,
-          [selectedUser.id]: transformed,
+          [selectedUser?.id]: transformed1,
         }));
       } catch (err) {
         console.error("Error fetching messages:", err);

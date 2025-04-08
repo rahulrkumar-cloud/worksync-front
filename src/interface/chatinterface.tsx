@@ -5,7 +5,7 @@ export interface Message {
 }
 
 export interface User {
-    id: string;
+    id: any;
     name: string;
     username: string;
 }
