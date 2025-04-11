@@ -44,7 +44,6 @@ const Login: React.FC = () => {
       });
 
       const data = await response.json();
-      console.log("Response data:", data); // 🔍 Debug response
 
       if (!response.ok) {
         throw new Error(data.message || "Invalid Credentials");
@@ -58,9 +57,8 @@ const Login: React.FC = () => {
       Cookies.set("token", data.token, { expires: 7 });
       Cookies.set("user", JSON.stringify(data.user), { expires: 7 });
 
-      router.push("/chatspace"); // Redirect after login
+      router.push("/"); // Redirect after login
     } catch (err: any) {
-      console.log("Error caught:", err.message);
       setError(err.message);
     } finally {
       setLoading(false);

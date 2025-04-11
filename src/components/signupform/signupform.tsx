@@ -63,7 +63,6 @@ const SignupForm: React.FC = () => {
             alert("Signup successful! Redirecting to login...");
             router.push("/login");
         } catch (err: any) {
-            console.log("err", err)
             setError(err.message); // ✅ Now displays: "Email already exists. Please use a different email."
         } finally {
             setLoading(false);
@@ -82,7 +81,6 @@ const SignupForm: React.FC = () => {
                 });
 
                 const data = await response.json();
-                console.log(data)
                 setUsernameError("");
                 setIsValidUsername(true);
 
@@ -91,7 +89,6 @@ const SignupForm: React.FC = () => {
                 }
 
             } catch (err: any) {
-                console.log("❌ Error:", err);
                 setUsernameError(err.message);
                 setIsValidUsername(false);
             }
@@ -103,7 +100,6 @@ const SignupForm: React.FC = () => {
 
     const validateUsername = async (e: React.FormEvent) => { }
 
-    console.log("formData", formData, usernameError)
 
     return (
         <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 sm:px-6 lg:px-8 py-4 md:py-0">

@@ -16,11 +16,13 @@ import { io, Socket } from "socket.io-client";
 
 // Sidebar
 interface SidebarProps {
+  selectedUserId: any;
   users: User[];
   onSelectUser: (user: User) => void;
+  currentUserId:any;
 }
 
-const Sidebar = ({ users, onSelectUser }: SidebarProps) => (
+const Sidebar = ({ users, onSelectUser, selectedUserId,currentUserId }: SidebarProps) => (
   <div className="flex flex-col h-full bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700">
     <div className="shrink-0 p-4 text-lg font-semibold border-b border-zinc-200 dark:border-zinc-700">Chats</div>
     <div className="shrink-0 p-2 border-b border-zinc-200 dark:border-zinc-700">
@@ -32,17 +34,63 @@ const Sidebar = ({ users, onSelectUser }: SidebarProps) => (
     </div>
     <div className="flex-1 overflow-y-auto">
       <ScrollShadow className="h-full">
-        <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
-          {users.map((user) => (
-            <li
-              key={user.id}
-              className="p-4 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
-              onClick={() => onSelectUser(user)}
-            >
-              {user.name}
-            </li>
-          ))}
+        <ul className="space-y-2 mt-1 px-2">
+          {users
+            .filter((user) => user.id !== currentUserId).map((user) => {
+              const isSelected = user.id === selectedUserId;
+
+              return (
+                <li
+                  key={user.id}
+                  onClick={() => onSelectUser(user)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") onSelectUser(user);
+                  }}
+                  className={clsx(
+                    "group relative flex items-center gap-4 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 backdrop-blur-md shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-zinc-100 dark:focus:ring-offset-zinc-900",
+                    {
+                      // Light mode selected background
+                      "bg-primary/10 hover:bg-primary/20 text-primary": isSelected,
+                      // Dark mode selected background
+                      "dark:bg-primary/20 dark:hover:bg-primary/30": isSelected,
+                      // Non-selected
+                      "bg-zinc-50/80 dark:bg-zinc-900/60 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/70": !isSelected,
+                    }
+                  )}
+                >
+                  {/* Avatar with online dot */}
+                  <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-sky-500 to-violet-500 text-white font-semibold flex items-center justify-center text-lg shadow-lg group-hover:scale-105 transition-transform duration-300">
+                    {user.name.charAt(0).toUpperCase()}
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full"></span>
+                  </div>
+
+                  {/* User Info */}
+                  <div className="flex flex-col flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className={clsx("font-medium text-base", {
+                        "text-primary": isSelected,
+                        "text-zinc-900 dark:text-zinc-100": !isSelected,
+                      })}>
+                        {user.name}
+                      </span>
+
+                      {/* Optional unread badge */}
+                      <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full shadow-sm">
+                        3
+                      </span>
+                    </div>
+                    <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                      Active recently
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
         </ul>
+
+
       </ScrollShadow>
     </div>
   </div>
@@ -76,32 +124,52 @@ const ChatPanel = ({
   return (
     <div className="flex flex-col h-full w-full">
       {/* Header */}
-      <div className="shrink-0 p-4 border-b border-zinc-200 dark:border-zinc-700 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <button onClick={onBack}>
-            <ArrowLeftIcon className="block md:hidden w-5 h-5 text-gray-600 dark:text-gray-300" />
-          </button>
-          <div>
-            <h2 className="text-lg font-semibold">
-              {selectedUser ? `Chat with ${selectedUser.name}` : "Select a user to start chatting"}
-            </h2>
-            {selectedUser && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2 mt-1">
-                {isActiveNow && (
-                  <span className="h-2 w-2 rounded-full bg-green-500 inline-block" />
+      <div className="shrink-0 p-4 border-b border-zinc-200 dark:border-zinc-700">
+        <div className="flex justify-between items-center gap-4">
+          {/* Left Side - Back button + Avatar + Info */}
+          <div className="flex items-center gap-3">
+            <button onClick={onBack}>
+              <ArrowLeftIcon className="block md:hidden w-5 h-5 text-gray-600 dark:text-gray-300" />
+            </button>
+
+            <div className="flex items-center gap-4">
+              {/* Avatar */}
+              <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-sky-500 to-violet-500 text-white font-semibold flex items-center justify-center text-lg shadow-lg transition-transform duration-300">
+                {selectedUser?.name.charAt(0).toUpperCase()}
+              </div>
+
+              {/* Name + Status */}
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
+                    {selectedUser
+                      ? `${selectedUser.name}`
+                      : "Select a user to start chatting"}
+                  </h2>
+                </div>
+
+                {selectedUser && (
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 flex items-center gap-2 mt-0.5">
+                    {isActiveNow && (
+                      <span className="h-2 w-2 rounded-full bg-green-500 inline-block animate-pulse" />
+                    )}
+                    {isActiveNow ? "Active now" : "Last seen recently"}
+                  </p>
                 )}
-                {isActiveNow ? "Active now" : "Last seen recently"}
-              </p>
-            )}
+              </div>
+            </div>
           </div>
+
+          {/* Right Side - Call icons */}
+          {selectedUser && (
+            <div className="flex gap-4 items-center">
+              <PhoneIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 hover:text-blue-500 cursor-pointer transition" />
+              <VideoCameraIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 hover:text-blue-500 cursor-pointer transition" />
+            </div>
+          )}
         </div>
-        {selectedUser && (
-          <div className="flex gap-4">
-            <PhoneIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 hover:text-blue-500 cursor-pointer" />
-            <VideoCameraIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 hover:text-blue-500 cursor-pointer" />
-          </div>
-        )}
       </div>
+
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -169,6 +237,8 @@ export default function DesktopChat() {
   const [messages, setMessages] = useState<{ [key: string]: Message[] }>({});
   const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
   const currentUserId = String(user?.id || "");
+  const [selectedUserId, setSelectedUserId] = useState<string | number | null>(null);
+
 
   useEffect(() => {
     if (!currentUserId) return;
@@ -216,7 +286,7 @@ export default function DesktopChat() {
   useEffect(() => {
     const fetchMessages = async () => {
       if (!selectedUser) return;
-
+      if (!token) return;
       try {
         const res = await fetch(`${API_BASE_URL}/messages/${selectedUser.id}`, {
           method: "GET",
@@ -266,6 +336,7 @@ export default function DesktopChat() {
   const handleSelectUser = (user: User) => {
     setSelectedUser(user);
     setIsMobileChatOpen(true);
+    setSelectedUserId(user.id)
   };
 
   const handleBack = () => {
@@ -317,12 +388,25 @@ export default function DesktopChat() {
       </div>
 
       {/* Desktop/Tablet UI */}
-      <div className="hidden md:flex h-[calc(100vh-140px)] md:h-[calc(100vh-100px)] w-full">
-        <div className={clsx("w-full md:w-[30%] h-full", isMobileChatOpen ? "hidden md:block" : "block")}>
-          <Sidebar users={users} onSelectUser={handleSelectUser} />
+      <div className="hidden md:flex h-[calc(100vh-140px)] md:h-[calc(100vh-100px)] w-full border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm dark:shadow-md">
+        {/* Sidebar */}
+        <div
+          className={clsx(
+            "w-full md:w-[30%] h-full border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900",
+            isMobileChatOpen ? "hidden md:block" : "block"
+          )}
+        >
+          <Sidebar users={users} onSelectUser={handleSelectUser} selectedUserId={selectedUserId} currentUserId={currentUserId}/>
         </div>
 
-        <div className={clsx("w-full md:w-[70%] h-full bg-zinc-50 dark:bg-zinc-950", isMobileChatOpen ? "block" : "hidden", "md:block")}>
+        {/* Chat Panel */}
+        <div
+          className={clsx(
+            "w-full md:w-[70%] h-full bg-zinc-50 dark:bg-zinc-950",
+            isMobileChatOpen ? "block" : "hidden",
+            "md:block"
+          )}
+        >
           <ChatPanel
             selectedUser={selectedUser}
             onBack={handleBack}
@@ -332,6 +416,7 @@ export default function DesktopChat() {
           />
         </div>
       </div>
+
     </>
   );
 }

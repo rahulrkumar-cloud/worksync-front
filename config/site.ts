@@ -7,11 +7,12 @@ export const siteConfig = {
     {
       label: "Home",
       href: "/",
-    },
-    {
-      label: "Chat",
-      href: "/chatspace",
     }
+    // ,
+    // {
+    //   label: "Chat",
+    //   href: "/chatspace",
+    // }
   ],
   navMenuItems: [
     {

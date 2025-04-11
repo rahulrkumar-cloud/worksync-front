@@ -30,13 +30,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const cookies = parseCookies();
-    console.log("Cookies on page load:", cookies); // Debugging
   
     const storedToken = cookies.token;
     const storedUser = cookies.user ? JSON.parse(cookies.user) : null;
   
     if (!storedToken) {
-      console.log("No token found in cookies, skipping verification.");
       setIsLoading(false);
       return;
     }
@@ -45,7 +43,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   
     async function verifyToken(token: string, user: User | null) {
       try {
-        console.log("Verifying token:", token);
   
         const response = await fetch(`${API_BASE_URL}/auth/check-token`, {
           method: "GET",
@@ -56,12 +53,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
   
         if (response.ok) {
-          console.log("Token is valid.");
           setToken(token);
           setIsAuthenticated(true);
           setUser(user);
         } else {
-          console.log("Invalid token detected, clearing cookies.");
           logout();
         }
       } catch (error) {
@@ -80,6 +75,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     destroyCookie(null, "token");
     destroyCookie(null, "user");
+    destroyCookie(null, "selectedMenuItem");
   };
 
   if (isLoading) {
