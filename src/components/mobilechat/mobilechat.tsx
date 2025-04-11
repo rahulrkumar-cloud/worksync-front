@@ -39,27 +39,34 @@ export default function Mobilechat() {
 
 
     // 1. Initialize socket connection and receive messages
-    useEffect(() => {
-        if (!currentUserId) return;
+// inside useEffect (socket initialization)
+useEffect(() => {
+    if (!currentUserId) return;
 
-        const newSocket = io("https://worksync-socket.onrender.com", {
-            transports: ["websocket"],
-        });
+    const newSocket = io("https://worksync-socket.onrender.com", {
+        transports: ["websocket"],
+    });
 
-        setSocket(newSocket);
-        newSocket.emit("register", currentUserId);
+    setSocket(newSocket);
+    newSocket.emit("register", currentUserId);
 
-        newSocket.on("privateMessage", (data: Message) => {
+    newSocket.on("privateMessage", (data: Message) => {
+        const senderId = String(data.senderId);
+        const isIncoming = senderId !== currentUserId;
+
+        // Only update if incoming message (avoid duplication)
+        if (isIncoming) {
             setMessages((prev) => ({
                 ...prev,
-                [String(data.senderId)]: [...(prev[String(data.senderId)] || []), data],
+                [senderId]: [...(prev[senderId] || []), data],
             }));
-        });
+        }
+    });
 
-        return () => {
-            newSocket.disconnect();
-        };
-    }, [currentUserId]);
+    return () => {
+        newSocket.disconnect();
+    };
+}, [currentUserId]);
 
     // 2. Fetch users
     useEffect(() => {
@@ -112,41 +119,44 @@ export default function Mobilechat() {
         fetchMessages();
     }, [selectedUser, token]);
 
-    const handleSendMessage = async () => {
-        if (!message.trim() || !selectedUser || !socket) return;
+ // handleSendMessage
+const handleSendMessage = async () => {
+    if (!message.trim() || !selectedUser || !socket) return;
 
-        const msgData: Message = {
-            text: message,
-            senderId: currentUserId,
-            currenttime: new Date().toLocaleTimeString(),
-        };
+    const now = new Date();
+    const formattedTime = now.toLocaleTimeString();
 
-        socket.emit("privateMessage", {
-            ...msgData,
-            receiverId: selectedUser.id,
-        });
-
-        try {
-            const res = await fetch(`${API_BASE_URL}/messages/send/${selectedUser.id}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ message }),
-            });
-
-            if (!res.ok) throw new Error("Failed to send message");
-
-            setMessages((prev) => ({
-                ...prev,
-                [selectedUser.id]: [...(prev[selectedUser.id] || []), msgData],
-            }));
-            setMessage("");
-        } catch (err) {
-            console.error("Error sending message:", err);
-        }
+    const msgData: Message = {
+        text: message,
+        senderId: currentUserId,
+        currenttime: formattedTime,
     };
+
+    // Optimistically update UI before server response
+    setMessages((prev) => ({
+        ...prev,
+        [selectedUser.id]: [...(prev[selectedUser.id] || []), msgData],
+    }));
+    setMessage("");
+
+    socket.emit("privateMessage", {
+        ...msgData,
+        receiverId: selectedUser.id,
+    });
+
+    try {
+        await fetch(`${API_BASE_URL}/messages/send/${selectedUser.id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ message }),
+        });
+    } catch (err) {
+        console.error("Error sending message:", err);
+    }
+};
 
     const selectedMessages = selectedUser?.id ? messages[selectedUser.id] || [] : [];
     const isActiveNow = true;
