@@ -22,7 +22,7 @@ export function ContactListAndUserChatSheet({
     onClose: () => void;
     users: any;
     allmessage: any;
-    handlemessage:any
+    handlemessage: any
 }) {
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
     const containerRef = useRef(null);
@@ -50,7 +50,7 @@ export function ContactListAndUserChatSheet({
         // setSelectedUser(contact?.id)
         onSelect(contact); // Propagate selection if necessary
     };
-    console.log("selectedContactId", typeof selectedContactId,selectedContactId)
+    console.log("selectedContactId", typeof selectedContactId, selectedContactId)
 
     return (
         <Sheet.Container>
@@ -138,9 +138,9 @@ export function ContactListAndUserChatSheet({
                                     return (
                                         <div
                                             key={i}
-                                            className={`px-4 py-2 rounded-lg max-w-[75%] ${isCurrentUser
-                                                    ? "bg-green-100 dark:bg-green-800 self-end ml-auto"
-                                                    : "bg-gray-200 dark:bg-gray-700 self-start"
+                                            className={`px-4 py-2 rounded-lg max-w-[75%] break-words whitespace-pre-wrap ${isCurrentUser
+                                                ? "bg-green-100 dark:bg-green-800 self-end ml-auto"
+                                                : "bg-gray-200 dark:bg-gray-700 self-start"
                                                 }`}
                                         >
                                             {msg.text}
@@ -148,16 +148,23 @@ export function ContactListAndUserChatSheet({
                                                 {msg.currenttime}
                                             </div>
                                         </div>
+
                                     );
                                 })}
                             </div>
 
 
                             {/* Input */}
-                            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0A142F] flex items-center gap-2">
+                            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0A142F] flex items-center gap-2 mb-8">
                                 <input
                                     value={message}
                                     onChange={(e) => setMessage(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault(); // Prevents newline or form submission
+                                            handleSendMessage();
+                                        }
+                                    }}
                                     placeholder="Type a message"
                                     className="flex-1 p-3 rounded-full bg-gray-100 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
                                 />
