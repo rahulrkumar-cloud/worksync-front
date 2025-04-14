@@ -27,14 +27,12 @@ export function ChatSheet({
     const dialog = useDialog({}, containerRef);
     const overlay = useOverlay({ onClose: () => { }, isOpen: true, isDismissable: false }, containerRef);
     const [message, setMessage] = useState("");
-    const [selectedContactId, setSelectedContactId] = useState<number | null>(null);
 
 
     const handleSendMessage = () => {
         if (message.trim()) {
             console.log("Message Sent:", message);
-            setSelectedContactId(Number(selectedContact?.id));
-            handlemessage(message, selectedContactId)
+            handlemessage(message, Number(selectedContact?.id))
             setMessage("");
         }
     };
@@ -101,7 +99,7 @@ export function ChatSheet({
                         onChange={(e) => setMessage(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
-                                e.preventDefault();
+                                // e.preventDefault();
                                 handleSendMessage();
                             }
                         }}
