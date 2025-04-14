@@ -244,6 +244,8 @@ export default function DesktopChat() {
   const [selectedUserId, setSelectedUserId] = useState<string | number | null>(null);
   const [message, setMessage] = useState("");
 
+  console.log("contact",messages)
+
   useEffect(() => {
     if (!currentUserId) return;
 
