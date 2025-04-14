@@ -37,26 +37,32 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="en">
       <head />
-      <body
+      {/* <body
         className={clsx(
           "h-screen overflow-hidden bg-background font-sans antialiased",
           fontSans.variable,
         )}
+      > */}
+      <body
+        className={clsx(
+          "h-screen bg-background font-sans antialiased",
+          fontSans.variable,
+        )}
       >
         {/* <AuthProvider> */}
-          <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-            <div className="flex flex-col h-screen">
-              {/* Navbar stays fixed at the top */}
-              <Navbar />
+        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+          <div className="flex flex-col h-screen">
+            {/* Navbar stays fixed at the top */}
+            <Navbar />
 
-              {/* Main content wrapped with ProtectedRoute */}
-              <main className="flex-grow px-6 md:px-8 lg:px-8">
+            {/* Main content wrapped with ProtectedRoute */}
+            <main className="flex-grow px-6 md:px-8 lg:px-8">
               <ProtectedRoute>
-                  {children}
-                </ProtectedRoute>
-              </main>
-            </div>
-          </Providers>
+                {children}
+              </ProtectedRoute>
+            </main>
+          </div>
+        </Providers>
         {/* </AuthProvider> */}
       </body>
     </html>
