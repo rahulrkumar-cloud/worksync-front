@@ -33,11 +33,6 @@ interface DesktopContact {
     name: string;
 }
 
-const contacts: Contact[] = [
-    { id: 1, name: 'Alice', messages: ['Hey!', 'How are you?'] },
-    { id: 2, name: 'Bob', messages: ['Yo!', 'What’s up?'] },
-    { id: 3, name: 'Charlie', messages: ['Hello!', 'Long time no see!'] },
-];
 
 export default function MySheet() {
     const contactSheetState = useOverlayTriggerState({});
@@ -90,9 +85,30 @@ export default function MySheet() {
         };
     }, [currentUserId]);
 
+    // useEffect(() => {
+    //     const fetchUsers = async () => {
+    //         if (!token) return;
+    //         try {
+    //             const res = await fetch(`${API_BASE_URL}/users`, {
+    //                 method: "GET",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                     Authorization: `Bearer ${token}`,
+    //                 },
+    //             });
+    //             if (!res.ok) throw new Error("Failed to fetch users");
+    //             const data: User[] = await res.json();
+    //             console.log("currentUserId",data.map((user) => ({ ...user, id: String(user.id) })))
+    //             setUsers(data.map((user) => ({ ...user, id: String(user.id) })));
+    //         } catch (err) {
+    //             console.error(err);
+    //         }
+    //     };
+    //     fetchUsers();
+    // }, [token]);
     useEffect(() => {
         const fetchUsers = async () => {
-            if (!token) return;
+            if (!token || !currentUserId) return;
             try {
                 const res = await fetch(`${API_BASE_URL}/users`, {
                     method: "GET",
@@ -103,13 +119,18 @@ export default function MySheet() {
                 });
                 if (!res.ok) throw new Error("Failed to fetch users");
                 const data: User[] = await res.json();
-                setUsers(data.map((user) => ({ ...user, id: String(user.id) })));
+                const usersWithoutCurrent = data
+                    .map((user) => ({ ...user, id: String(user.id) }))
+                    .filter((user) => user.id !== String(currentUserId));
+    
+                setUsers(usersWithoutCurrent);
             } catch (err) {
                 console.error(err);
             }
         };
         fetchUsers();
-    }, [token]);
+    }, [token, currentUserId]);
+    
 
 
     useEffect(() => {
@@ -188,7 +209,7 @@ const handleSendMessage = async (messageText: string, receiverId: number) => {
 
 
 
-    console.log("users", users, messages,selectedContact)
+    console.log("currentUserId", currentUserId)
     return (
         <div className="p-6">
             <button
@@ -205,11 +226,10 @@ const handleSendMessage = async (messageText: string, receiverId: number) => {
                 <OverlayProvider>
                     <FocusScope contain autoFocus restoreFocus>
                         <ContactListSheet
-                            contacts={contacts}
-                            onSelect={handleContactClick}
-                            onClose={contactSheetState.close}
                             users={users}
                             allmessage={messages}
+                            onSelect={handleContactClick}
+                            onClose={contactSheetState.close}
                             handlemessage={handleSendMessage}
                         />
                     </FocusScope>
@@ -218,19 +238,18 @@ const handleSendMessage = async (messageText: string, receiverId: number) => {
 
             {/*Large screens (e.g., desktop)*/}
             <Sheet
-                isOpen={contactSheetState.isOpen}
-                onClose={contactSheetState.close}
                 disableDrag={true}
                 className="hidden md:block"
+                isOpen={contactSheetState.isOpen}
+                onClose={contactSheetState.close}
             >
                 <OverlayProvider>
                     <FocusScope contain autoFocus restoreFocus>
                         <ContactListAndUserChatSheet
-                            onSelect={handleContactClick}
-                            onClose={contactSheetState.close}
-                            contacts={contacts}
                             users={users}
                             allmessage={messages}
+                            onSelect={handleContactClick}
+                            onClose={contactSheetState.close}
                             handlemessage={handleSendMessage}
                         />
                     </FocusScope>
@@ -248,7 +267,6 @@ const handleSendMessage = async (messageText: string, receiverId: number) => {
                     <FocusScope contain autoFocus restoreFocus>
                         {selectedContact && (
                             <ChatSheet
-                                contacts={contacts}
                                 allmessage={messages}
                                 onBack={() => chatSheetState.close()}
                                 handlemessage={handleSendMessage} selectedContact={selectedContactData}                            />

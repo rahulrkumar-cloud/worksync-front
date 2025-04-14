@@ -10,16 +10,14 @@ interface Contact {
 }
 
 export function ContactListSheet({
-    contacts,
     onSelect,
-    onClose, users, allmessage, handlemessage: any
+    onClose, users, allmessage, handlemessage
 }: {
-    contacts: Contact[];
     onSelect: (contact: Contact) => void;
     onClose: () => void;
     users: any;
     allmessage: any
-    handlemessage: any
+    handlemessage: any;
 }) {
     const containerRef = useRef(null);
     const dialog = useDialog({}, containerRef);
@@ -32,7 +30,7 @@ export function ContactListSheet({
 
     useModal();
 
-    console.log("users", users)
+    console.log("closeButton", closeButton)
 
     const handleContactSelect = (contact: Contact) => {
         console.log("contactcontact", contact)
@@ -41,7 +39,7 @@ export function ContactListSheet({
         // setSelectedUser(contact?.id)
         onSelect(contact); // Propagate selection if necessary
     };
-    console.log("selectedContactselectedContact",selectedContact)
+    console.log("selectedContactselectedContact", selectedContact)
 
 
     return (
@@ -57,8 +55,7 @@ export function ContactListSheet({
                     <div className="flex items-center justify-between p-4 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-[#0A142F] dark:text-white">Contacts</h2>
                         <button
-                            {...closeButton.buttonProps}
-                            ref={closeButtonRef}
+                            onClick={onClose}
                             className="flex items-center gap-2 text-white bg-[#0A142F] hover:bg-[#1c2a57] px-4 py-2 rounded-full transition-all"
                         >
                             <svg
@@ -77,19 +74,19 @@ export function ContactListSheet({
 
                     <div className="overflow-y-auto px-4 py-2 flex-1">
                         {(users ?? []).map((contact: any) => (
-                            <div
-                                key={contact.id}
-                                className="flex items-center gap-4 p-3 rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition"
-                                onClick={() => handleContactSelect(contact)}
-                            >
-                                <div className="w-10 h-10 bg-gray-400 text-white rounded-full flex items-center justify-center font-bold">
-                                    {contact.name[0]}
+                                <div
+                                    key={contact.id}
+                                    className="flex items-center gap-4 p-3 rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition"
+                                    onClick={() => handleContactSelect(contact)}
+                                >
+                                    <div className="w-10 h-10 bg-gray-400 text-white rounded-full flex items-center justify-center font-bold">
+                                        {contact.name[0]}
+                                    </div>
+                                    <div className="text-base font-medium text-gray-800 dark:text-gray-100">
+                                        {contact.name}
+                                    </div>
                                 </div>
-                                <div className="text-base font-medium text-gray-800 dark:text-gray-100">
-                                    {contact.name}
-                                </div>
-                            </div>
-                        ))}
+                            ))}
                     </div>
                 </div>
             </Sheet.Container>

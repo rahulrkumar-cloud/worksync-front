@@ -10,14 +10,12 @@ interface Contact {
     messages: string[];
 }
 export function ContactListAndUserChatSheet({
-    contacts,
     onSelect,
     onClose,
     users,
     allmessage,
-    handlemessage
+    handlemessage,
 }: {
-    contacts: Contact[];
     onSelect: (contact: Contact) => void;
     onClose: () => void;
     users: any;

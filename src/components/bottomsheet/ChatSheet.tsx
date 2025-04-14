@@ -12,7 +12,7 @@ interface Contact {
     messages: string[];
 }
 export function ChatSheet({
-    selectedContact, contacts,
+    selectedContact,
     onBack,
     handlemessage, allmessage,
 }: {
@@ -20,7 +20,6 @@ export function ChatSheet({
     onBack: () => void;
     handlemessage: any;
     allmessage: any
-    contacts: any;
 
 }) {
     const containerRef = useRef(null);
