@@ -50,7 +50,6 @@ export default function MySheet() {
     const [message, setMessage] = useState("");
     const [selectedContactData, setSelectedContactData] = useState<Contact | null>(null);
 
-
     const handleContactClick = (contact: Contact) => {
         setSelectedContactData(contact)
         setSelectedContact(contact?.id);
@@ -122,7 +121,7 @@ export default function MySheet() {
                 const usersWithoutCurrent = data
                     .map((user) => ({ ...user, id: String(user.id) }))
                     .filter((user) => user.id !== String(currentUserId));
-    
+
                 setUsers(usersWithoutCurrent);
             } catch (err) {
                 console.error(err);
@@ -130,96 +129,90 @@ export default function MySheet() {
         };
         fetchUsers();
     }, [token, currentUserId]);
-    
+
 
 
     useEffect(() => {
         if (prevSelectedContactRef.current !== selectedContact) {
-        const fetchMessages = async () => {
-            console.log("Entering!!!")
-            if (!selectedContact || !token) return;
-            try {
-                const res = await fetch(`${API_BASE_URL}/messages/${selectedContact}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                if (!res.ok) throw new Error("Failed to fetch messages");
-    
-                const rawData = await res.json();
-    
-                const transformed1: Message[] = rawData.map((msg: any) => ({
-                    text: msg.message,
-                    senderId: String(msg.sender_id),
-                    currenttime: new Date(msg.created_at).toISOString().slice(11, 19),
-                }));
-    
-                setMessages((prev) => ({
-                    ...prev,
-                    [selectedContact]: transformed1,
-                }));
-            } catch (err) {
-                console.error("Error fetching messages:", err);
-            }
-        };
-        prevSelectedContactRef.current = selectedContact;
-        fetchMessages();
-    }
-    
+            const fetchMessages = async () => {
+                console.log("Entering!!!")
+                if (!selectedContact || !token) return;
+                try {
+                    const res = await fetch(`${API_BASE_URL}/messages/${selectedContact}`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    if (!res.ok) throw new Error("Failed to fetch messages");
+
+                    const rawData = await res.json();
+
+                    const transformed1: Message[] = rawData.map((msg: any) => ({
+                        text: msg.message,
+                        senderId: String(msg.sender_id),
+                        currenttime: new Date(msg.created_at).toISOString().slice(11, 19),
+                    }));
+
+                    setMessages((prev) => ({
+                        ...prev,
+                        [selectedContact]: transformed1,
+                    }));
+                } catch (err) {
+                    console.error("Error fetching messages:", err);
+                }
+            };
+            prevSelectedContactRef.current = selectedContact;
+            fetchMessages();
+        }
+
     }, [selectedContact]);
 
-const handleSendMessage = async (messageText: string, receiverId: number) => {
-    console.log("messageText",messageText,typeof receiverId,receiverId)
-    if (!messageText.trim() || !receiverId || !socket) return;
+    const handleSendMessage = async (messageText: string, receiverId: number) => {
+        console.log("messageText", messageText, typeof receiverId, receiverId)
+        if (!messageText.trim() || !receiverId || !socket) return;
 
-    const now = new Date();
-    const formattedTime = now.toLocaleTimeString();
+        const now = new Date();
+        const formattedTime = now.toLocaleTimeString();
 
-    const msgData: Message = {
-        text: messageText,
-        senderId: currentUserId,
-        currenttime: formattedTime,
+        const msgData: Message = {
+            text: messageText,
+            senderId: currentUserId,
+            currenttime: formattedTime,
+        };
+
+        setMessages((prev) => ({
+            ...prev,
+            [receiverId]: [...(prev[receiverId] || []), msgData],
+        }));
+
+        socket.emit("privateMessage", {
+            ...msgData,
+            receiverId,
+        });
+
+        try {
+            await fetch(`${API_BASE_URL}/messages/send/${receiverId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ message: messageText }),
+            });
+        } catch (err) {
+            console.error("Error sending message:", err);
+        }
     };
 
-    setMessages((prev) => ({
-        ...prev,
-        [receiverId]: [...(prev[receiverId] || []), msgData],
-    }));
-
-    socket.emit("privateMessage", {
-        ...msgData,
-        receiverId,
-    });
-
-    try {
-        await fetch(`${API_BASE_URL}/messages/send/${receiverId}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ message: messageText }),
-        });
-    } catch (err) {
-        console.error("Error sending message:", err);
-    }
-};
-
-
+    useEffect(() => {
+        contactSheetState.open();
+    }, []);
 
     console.log("currentUserId", currentUserId)
     return (
         <div className="p-6">
-            <button
-                {...openButton.buttonProps}
-                ref={openButtonRef}
-                className="px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-all"
-            >
-                Open WhatsApp Drawer
-            </button>
-
             {/* Contact Sheet */}
             {/*Small screens (e.g., mobile)*/}
             <Sheet isOpen={contactSheetState.isOpen} onClose={contactSheetState.close} className="md:hidden">
@@ -269,13 +262,13 @@ const handleSendMessage = async (messageText: string, receiverId: number) => {
                             <ChatSheet
                                 allmessage={messages}
                                 onBack={() => chatSheetState.close()}
-                                handlemessage={handleSendMessage} selectedContact={selectedContactData}                            />
+                                handlemessage={handleSendMessage} selectedContact={selectedContactData} />
                         )}
                     </FocusScope>
                 </OverlayProvider>
             </Sheet>
 
-            
+
         </div>
     );
 }

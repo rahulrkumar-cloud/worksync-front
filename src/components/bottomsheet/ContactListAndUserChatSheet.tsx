@@ -1,5 +1,6 @@
 import { PhoneIcon, VideoCameraIcon } from "@heroicons/react/24/solid";
 import { Avatar } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { useButton, useDialog, useModal, useOverlay } from "react-aria";
 import { Sheet } from "react-modal-sheet";
@@ -30,6 +31,7 @@ export function ContactListAndUserChatSheet({
     const closeButton = useButton({ onPress: onClose }, closeButtonRef);
     const [message, setMessage] = useState("");
     const [selectedContactId, setSelectedContactId] = useState<number | null>(null);
+    const router = useRouter();
     useModal();
 
     const handleSendMessage = () => {
@@ -63,8 +65,9 @@ export function ContactListAndUserChatSheet({
                     <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                         <h2 className="text-xl font-semibold text-[#0A142F] dark:text-white">Contacts</h2>
                         <button
-                            {...closeButton.buttonProps}
-                            ref={closeButtonRef}
+                            onClick={() => router.push("/")}
+                            // {...closeButton.buttonProps}
+                            // ref={closeButtonRef}
                             className="flex items-center gap-2 text-white bg-[#0A142F] hover:bg-[#1c2a57] px-4 py-2 rounded-full transition-all"
                         >
                             <svg

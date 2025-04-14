@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useButton, useDialog, useModal, useOverlay } from "react-aria";
 import { Sheet } from "react-modal-sheet";
 import { ChatSheet } from "./ChatSheet";
+import { useRouter } from "next/navigation";
 
 interface Contact {
     id: number;
@@ -27,7 +28,7 @@ export function ContactListSheet({
 
     const [selectedContactId, setSelectedContactId] = useState<number | null>(null);
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
-
+    const router = useRouter();
     useModal();
 
     console.log("closeButton", closeButton)
@@ -55,7 +56,8 @@ export function ContactListSheet({
                     <div className="flex items-center justify-between p-4 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-[#0A142F] dark:text-white">Contacts</h2>
                         <button
-                            onClick={onClose}
+                            onClick={() => router.push("/")}
+                            // onClick={onClose}
                             className="flex items-center gap-2 text-white bg-[#0A142F] hover:bg-[#1c2a57] px-4 py-2 rounded-full transition-all"
                         >
                             <svg
@@ -74,19 +76,19 @@ export function ContactListSheet({
 
                     <div className="overflow-y-auto px-4 py-2 flex-1">
                         {(users ?? []).map((contact: any) => (
-                                <div
-                                    key={contact.id}
-                                    className="flex items-center gap-4 p-3 rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition"
-                                    onClick={() => handleContactSelect(contact)}
-                                >
-                                    <div className="w-10 h-10 bg-gray-400 text-white rounded-full flex items-center justify-center font-bold">
-                                        {contact.name[0]}
-                                    </div>
-                                    <div className="text-base font-medium text-gray-800 dark:text-gray-100">
-                                        {contact.name}
-                                    </div>
+                            <div
+                                key={contact.id}
+                                className="flex items-center gap-4 p-3 rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition"
+                                onClick={() => handleContactSelect(contact)}
+                            >
+                                <div className="w-10 h-10 bg-gray-400 text-white rounded-full flex items-center justify-center font-bold">
+                                    {contact.name[0]}
                                 </div>
-                            ))}
+                                <div className="text-base font-medium text-gray-800 dark:text-gray-100">
+                                    {contact.name}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </Sheet.Container>
