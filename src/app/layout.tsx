@@ -36,7 +36,10 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="en">
-      <head />
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  </head>
+
       {/* <body
         className={clsx(
           "h-screen overflow-hidden bg-background font-sans antialiased",

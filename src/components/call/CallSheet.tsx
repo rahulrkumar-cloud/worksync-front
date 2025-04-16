@@ -1,6 +1,7 @@
 "use client";
 
 import { PhoneIcon, VideoCameraIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { Button } from "@nextui-org/react";
 import { Sheet } from "react-modal-sheet";
 
 export function CallScreenSheet({
@@ -25,16 +26,19 @@ export function CallScreenSheet({
                 <div className="h-full w-full text-white flex flex-col items-center justify-center gap-6">
                     {/* Header */}
                     <div
-                        className="absolute top-0 inset-x-0 px-4 flex justify-end z-10"
-                        style={{ paddingTop: "env(safe-area-inset-top)" }}
+                        className="absolute top-[3%] inset-x-0 px-4 flex justify-end z-10"
+                        style={{ paddingTop: 'env(safe-area-inset-top)' }}
                     >
-                        <button
+                        {/* <button
                             onClick={onEndCall}
-                            className="p-2 rounded-full bg-red-600 hover:bg-red-700 transition"
-                        >
-                            <XMarkIcon className="h-6 w-6 text-white" />
-                        </button>
+                            className="p-2 rounded-full bg-transparent hover:bg-red-700 transition"
+                        > */}
+                            {/* <XMarkIcon className="h-6 w-6 text-white" /> */}
+                            <Button onPress={onEndCall}
+                            className="p-2 rounded-3xl bg-red-600 hover:bg-red-500 transition">End call</Button>
+                        {/* </button> */}
                     </div>
+
 
                     {/* Avatar + Name */}
                     <div className="flex flex-col items-center">
