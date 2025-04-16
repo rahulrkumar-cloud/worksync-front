@@ -22,6 +22,7 @@ import { ContactListSheet } from './ContactListSheet';
 import { useAuth } from '@/context/TokenProvider';
 import { Message, User } from '@/src/interface/chatinterface';
 import { API_BASE_URL } from '@/config/api';
+import { useSocket } from '@/context/SocketProvider';
 interface Contact {
     id: number;
     name: string;
@@ -45,32 +46,51 @@ export default function MySheet() {
     const [users, setUsers] = useState<User[]>([]);
     const [messages, setMessages] = useState<{ [key: string]: Message[] }>({});
     const currentUserId = String(user?.id || "");
-    const [socket, setSocket] = useState<Socket | null>(null);
+    // const [socket, setSocket] = useState<Socket | null>(null);
     const prevSelectedContactRef = useRef<Contact | number | null>(null);
     const [message, setMessage] = useState("");
     const [selectedContactData, setSelectedContactData] = useState<Contact | null>(null);
-
+    const { socket } = useSocket();
     const handleContactClick = (contact: Contact) => {
         setSelectedContactData(contact)
         setSelectedContact(contact?.id);
         chatSheetState.open();
     };
 
+    // useEffect(() => {
+    //     if (!currentUserId) return;
+
+    //     const newSocket = io("https://worksync-socket.onrender.com", {
+    //         transports: ["websocket"],
+    //     });
+
+    //     setSocket(newSocket);
+    //     newSocket.emit("register", currentUserId);
+
+    //     newSocket.on("privateMessage", (data: Message) => {
+    //         const senderId = String(data.senderId);
+    //         const isIncoming = senderId !== currentUserId;
+
+    //         // Only update if incoming message (avoid duplication)
+    //         if (isIncoming) {
+    //             setMessages((prev) => ({
+    //                 ...prev,
+    //                 [senderId]: [...(prev[senderId] || []), data],
+    //             }));
+    //         }
+    //     });
+
+    //     return () => {
+    //         newSocket.disconnect();
+    //     };
+    // }, [currentUserId]);
     useEffect(() => {
-        if (!currentUserId) return;
+        if (!socket) return;
 
-        const newSocket = io("https://worksync-socket.onrender.com", {
-            transports: ["websocket"],
-        });
-
-        setSocket(newSocket);
-        newSocket.emit("register", currentUserId);
-
-        newSocket.on("privateMessage", (data: Message) => {
+        socket.on("privateMessage", (data: Message) => {
             const senderId = String(data.senderId);
             const isIncoming = senderId !== currentUserId;
 
-            // Only update if incoming message (avoid duplication)
             if (isIncoming) {
                 setMessages((prev) => ({
                     ...prev,
@@ -80,31 +100,9 @@ export default function MySheet() {
         });
 
         return () => {
-            newSocket.disconnect();
+            socket.off("privateMessage");
         };
-    }, [currentUserId]);
-
-    // useEffect(() => {
-    //     const fetchUsers = async () => {
-    //         if (!token) return;
-    //         try {
-    //             const res = await fetch(`${API_BASE_URL}/users`, {
-    //                 method: "GET",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     Authorization: `Bearer ${token}`,
-    //                 },
-    //             });
-    //             if (!res.ok) throw new Error("Failed to fetch users");
-    //             const data: User[] = await res.json();
-    //             console.log("currentUserId",data.map((user) => ({ ...user, id: String(user.id) })))
-    //             setUsers(data.map((user) => ({ ...user, id: String(user.id) })));
-    //         } catch (err) {
-    //             console.error(err);
-    //         }
-    //     };
-    //     fetchUsers();
-    // }, [token]);
+    }, [socket, currentUserId]);
     useEffect(() => {
         const fetchUsers = async () => {
             if (!token || !currentUserId) return;
@@ -243,11 +241,11 @@ export default function MySheet() {
                             allmessage={messages}
                             onSelect={handleContactClick}
                             onClose={contactSheetState.close}
-                            handlemessage={handleSendMessage} userId={currentUserId}                        />
+                            handlemessage={handleSendMessage} userId={currentUserId} />
                     </FocusScope>
                 </OverlayProvider>
             </Sheet>
-            
+
             {/*Small screens (e.g., mobile)*/}
             {/* Chat Sheet */}
             <Sheet

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { AuthProvider } from "@/context/TokenProvider"; // ✅ move it here
 import { OverlayProvider } from "react-aria";
+import { SocketProvider } from "@/context/SocketProvider";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -20,9 +21,11 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     <HeroUIProvider navigate={router.push}>
       <NextThemesProvider {...themeProps}>
         <AuthProvider>
-        <OverlayProvider>
-          {children}
-          </OverlayProvider>
+          <SocketProvider>
+            <OverlayProvider>
+              {children}
+            </OverlayProvider>
+          </SocketProvider>
         </AuthProvider>
       </NextThemesProvider>
     </HeroUIProvider>
