@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000"); // Change to your backend URL if needed
+const socket = io("https://worksync-socket.onrender.com"); // Change to your backend URL if needed
 
 export const useWebRTC = (userId: string) => {
   const peerRef = useRef<RTCPeerConnection | null>(null);
