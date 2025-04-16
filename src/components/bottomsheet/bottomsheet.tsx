@@ -59,7 +59,7 @@ export default function MySheet() {
     useEffect(() => {
         if (!currentUserId) return;
 
-        const newSocket = io("https://worksync-socket.onrender.com", {
+        const newSocket = io("http://localhost:5000", {
             transports: ["websocket"],
         });
 
@@ -243,12 +243,12 @@ export default function MySheet() {
                             allmessage={messages}
                             onSelect={handleContactClick}
                             onClose={contactSheetState.close}
-                            handlemessage={handleSendMessage}
-                        />
+                            handlemessage={handleSendMessage} userId={currentUserId}                        />
                     </FocusScope>
                 </OverlayProvider>
             </Sheet>
-
+            
+            {/*Small screens (e.g., mobile)*/}
             {/* Chat Sheet */}
             <Sheet
                 isOpen={chatSheetState.isOpen}

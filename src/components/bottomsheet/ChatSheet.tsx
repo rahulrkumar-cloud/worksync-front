@@ -36,7 +36,7 @@ export function ChatSheet({
         }
     };
     console.log("selectedContact", allmessage)
-
+    const isActiveNow = true;
     return (
         <Sheet.Container>
             <div
@@ -46,25 +46,42 @@ export function ChatSheet({
                 ref={containerRef}
             >
                 {/* Header */}
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                    <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
-                        <ArrowLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
-                    </button>
-                    <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 flex-1 text-center">
-                        {selectedContact.name}
-                    </h2>
-                    <div className="flex gap-3">
-                        <button
-                            className="p-2 bg-green-500 hover:bg-green-600 rounded-full"
-                            onClick={() => console.log("Audio call")}
-                        >
-                            <PhoneIcon className="w-5 h-5 text-white" />
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                    {/* Back Button + User Info */}
+                    <div className="flex items-center gap-4">
+                        <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                            <ArrowLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
                         </button>
-                        <button
-                            className="p-2 bg-blue-500 hover:bg-blue-600 rounded-full"
-                            onClick={() => console.log("Video call")}
-                        >
-                            <VideoCameraIcon className="w-5 h-5 text-white" />
+
+                        {/* Avatar */}
+                        <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-sky-500 to-violet-500 text-white font-semibold flex items-center justify-center text-lg shadow-lg transition-transform duration-300">
+                            {selectedContact?.name.charAt(0).toUpperCase()}
+                        </div>
+
+                        {/* Name + Status */}
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                                <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
+                                    {selectedContact ? selectedContact.name : "Select a user to start chatting"}
+                                </h2>
+                            </div>
+
+                            {selectedContact && (
+                                <p className="text-sm text-zinc-500 dark:text-zinc-400 flex items-center gap-2 mt-0.5">
+                                    {isActiveNow && <span className="h-2 w-2 rounded-full bg-green-500 inline-block animate-pulse" />}
+                                    {isActiveNow ? "Active now" : "Last seen recently"}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Call Buttons */}
+                    <div className="flex items-center gap-3">
+                        <button className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                            <PhoneIcon className="w-5 h-5 text-zinc-600 dark:text-zinc-300" />
+                        </button>
+                        <button className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                            <VideoCameraIcon className="w-5 h-5 text-zinc-600 dark:text-zinc-300" />
                         </button>
                     </div>
                 </div>
