@@ -5,6 +5,7 @@ import { Avatar } from "@nextui-org/react";
 import { useRef, useState } from "react";
 import { useButton, useDialog, useModal, useOverlay } from "react-aria";
 import { Sheet } from "react-modal-sheet";
+import { CallScreenSheet } from "../call/CallSheet";
 
 interface Contact {
     id: number;
@@ -26,7 +27,8 @@ export function ChatSheet({
     const dialog = useDialog({}, containerRef);
     const overlay = useOverlay({ onClose: () => { }, isOpen: true, isDismissable: false }, containerRef);
     const [message, setMessage] = useState("");
-
+    const [showCallScreen, setShowCallScreen] = useState(false);
+    const [callType, setCallType] = useState<"audio" | "video" | null>(null);
 
     const handleSendMessage = () => {
         if (message.trim()) {
@@ -38,7 +40,8 @@ export function ChatSheet({
     console.log("selectedContact", allmessage)
     const isActiveNow = true;
     return (
-        <Sheet.Container>
+        // <Sheet.Container>
+        <Sheet.Container className="fixed inset-0 z-50">
             <div
                 className="h-full flex flex-col bg-white dark:bg-[#0A142F] rounded-t-2xl"
                 {...overlay.overlayProps}
@@ -77,10 +80,20 @@ export function ChatSheet({
 
                     {/* Call Buttons */}
                     <div className="flex items-center gap-3">
-                        <button className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                        <button
+                            onClick={() => {
+                                setCallType("audio");
+                                setShowCallScreen(true);
+                            }}
+                            className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
                             <PhoneIcon className="w-5 h-5 text-zinc-600 dark:text-zinc-300" />
                         </button>
-                        <button className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                        <button
+                            onClick={() => {
+                                setCallType("video");
+                                setShowCallScreen(true);
+                            }}
+                            className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
                             <VideoCameraIcon className="w-5 h-5 text-zinc-600 dark:text-zinc-300" />
                         </button>
                     </div>
@@ -139,6 +152,16 @@ export function ChatSheet({
                     </button>
                 </div>
             </div>
+            {showCallScreen && selectedContact && (
+                <CallScreenSheet
+                    contactName={selectedContact.name}
+                    callType={callType as "audio" | "video"}
+                    onEndCall={() => {
+                        setShowCallScreen(false);
+                        setCallType(null);
+                    }}
+                />
+            )}
         </Sheet.Container>
 
 

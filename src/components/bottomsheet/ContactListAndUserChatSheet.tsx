@@ -269,6 +269,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { useButton, useDialog, useModal, useOverlay } from "react-aria";
 import { Sheet } from "react-modal-sheet";
+import { CallScreenSheet } from "../call/CallSheet";
 
 interface Contact {
     id: number;
@@ -280,14 +281,14 @@ export function ContactListAndUserChatSheet({
     onClose,
     users,
     allmessage,
-    handlemessage,userId
+    handlemessage, userId
 }: {
     onSelect: (contact: Contact) => void;
     onClose: () => void;
     users: any;
     allmessage: any;
     handlemessage: any;
-    userId:any
+    userId: any
 }) {
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
     const containerRef = useRef(null);
@@ -298,6 +299,9 @@ export function ContactListAndUserChatSheet({
     const [message, setMessage] = useState("");
     const [selectedContactId, setSelectedContactId] = useState<number | null>(null);
     const router = useRouter();
+
+    const [showCallScreen, setShowCallScreen] = useState(false);
+    const [callType, setCallType] = useState<"audio" | "video" | null>(null);
     useModal();
 
     const handleSendMessage = () => {
@@ -319,7 +323,8 @@ export function ContactListAndUserChatSheet({
     console.log("selectedContactId", typeof selectedContactId, selectedContactId)
     const isActiveNow = true;
     return (
-        <Sheet.Container>
+        // <Sheet.Container>
+        <Sheet.Container className="fixed inset-0 z-50">
             <div
                 {...overlay.overlayProps}
                 {...dialog.dialogProps}
@@ -442,17 +447,24 @@ export function ContactListAndUserChatSheet({
                                 <div className="flex gap-3">
                                     <button
                                         className="p-3 rounded-full bg-green-500 hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 backdrop-blur-sm"
-                                        onClick={() => console.log("Audio call")}
+                                        onClick={() => {
+                                            setCallType("audio");
+                                            setShowCallScreen(true);
+                                        }}
                                     >
                                         <PhoneIcon className="w-5 h-5 text-white" />
                                     </button>
 
                                     <button
                                         className="p-3 rounded-full bg-blue-500 hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 backdrop-blur-sm"
-                                        onClick={() => console.log("Video call")}
+                                        onClick={() => {
+                                            setCallType("video");
+                                            setShowCallScreen(true);
+                                        }}
                                     >
                                         <VideoCameraIcon className="w-5 h-5 text-white" />
                                     </button>
+
                                 </div>
 
                             </div>
@@ -518,6 +530,16 @@ export function ContactListAndUserChatSheet({
                     )}
                 </div>
             </div>
+            {showCallScreen && selectedContact && (
+                <CallScreenSheet
+                    contactName={selectedContact.name}
+                    callType={callType as "audio" | "video"}
+                    onEndCall={() => {
+                        setShowCallScreen(false);
+                        setCallType(null);
+                    }}
+                />
+            )}
 
         </Sheet.Container>
     );

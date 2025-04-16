@@ -46,7 +46,8 @@ export function ContactListSheet({
     return (
 
         <>
-            <Sheet.Container>
+            {/* <Sheet.Container> */}
+            <Sheet.Container className="fixed inset-0 z-50">
                 <div
                     {...overlay.overlayProps}
                     {...dialog.dialogProps}
@@ -86,27 +87,27 @@ export function ContactListSheet({
                                 </div> */}
                                 {/* Avatar */}
                                 <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-fuchsia-600 to-indigo-600 text-white font-bold flex items-center justify-center text-lg shadow-lg group-hover:scale-105 transition-transform duration-300">
-                                            {contact.name.charAt(0).toUpperCase()}
-                                            {/* Online dot */}
-                                            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full"></span>
-                                        </div>
+                                    {contact.name.charAt(0).toUpperCase()}
+                                    {/* Online dot */}
+                                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full"></span>
+                                </div>
                                 {/* <div className="text-base font-medium text-gray-800 dark:text-gray-100">
                                     {contact.name}
                                 </div> */}
                                 <div className="flex flex-col flex-1">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-zinc-900 dark:text-zinc-100 font-semibold text-base">
-                                                    {contact.name}
-                                                </span>
-                                                {/* Unread badge (optional logic) */}
-                                                <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full shadow-sm">
-                                                    2
-                                                </span>
-                                            </div>
-                                            <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                                                Online now • Tap to chat
-                                            </span>
-                                        </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-zinc-900 dark:text-zinc-100 font-semibold text-base">
+                                            {contact.name}
+                                        </span>
+                                        {/* Unread badge (optional logic) */}
+                                        <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full shadow-sm">
+                                            2
+                                        </span>
+                                    </div>
+                                    <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                                        Online now • Tap to chat
+                                    </span>
+                                </div>
                             </div>
                         ))}
                     </div>
