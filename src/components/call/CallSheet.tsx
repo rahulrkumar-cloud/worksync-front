@@ -24,7 +24,10 @@ export function CallScreenSheet({
             <Sheet.Container className="!h-screen !max-h-screen !rounded-none !bg-[#0A142F]">
                 <div className="h-full w-full text-white flex flex-col items-center justify-center gap-6">
                     {/* Header */}
-                    <div className="absolute top-0 w-full p-4 flex justify-end">
+                    <div
+                        className="absolute top-0 inset-x-0 px-4 flex justify-end z-10"
+                        style={{ paddingTop: "env(safe-area-inset-top)" }}
+                    >
                         <button
                             onClick={onEndCall}
                             className="p-2 rounded-full bg-red-600 hover:bg-red-700 transition"

@@ -37,7 +37,8 @@
     "react-dom": "18.3.1",
     "react-modal-sheet": "^4.0.1",
     "react-stately": "^3.37.0",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "tailwindcss-safe-area": "^0.6.0"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "15.0.4",
