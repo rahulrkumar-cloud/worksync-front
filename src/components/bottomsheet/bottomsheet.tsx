@@ -59,7 +59,7 @@ export default function MySheet() {
     useEffect(() => {
         if (!currentUserId) return;
 
-        const newSocket = io("http://localhost:5000", {
+        const newSocket = io("https://worksync-socket.onrender.com", {
             transports: ["websocket"],
         });
 
