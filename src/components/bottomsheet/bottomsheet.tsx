@@ -260,7 +260,7 @@ export default function MySheet() {
                             <ChatSheet
                                 allmessage={messages}
                                 onBack={() => chatSheetState.close()}
-                                handlemessage={handleSendMessage} selectedContact={selectedContactData} />
+                                handlemessage={handleSendMessage} selectedContact={selectedContactData} userId={currentUserId}/>
                         )}
                     </FocusScope>
                 </OverlayProvider>

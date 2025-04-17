@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { useButton, useDialog, useModal, useOverlay } from "react-aria";
 import { Sheet } from "react-modal-sheet";
 import { CallScreenSheet } from "../call/CallSheet";
+import { useWebRTC } from "@/src/helper/useWebRTC";
 
 interface Contact {
     id: number;
@@ -15,12 +16,13 @@ interface Contact {
 export function ChatSheet({
     selectedContact,
     onBack,
-    handlemessage, allmessage,
+    handlemessage, allmessage,userId
 }: {
     selectedContact: any;
     onBack: () => void;
     handlemessage: any;
-    allmessage: any
+    allmessage: any;
+    userId: any
 
 }) {
     const containerRef = useRef(null);
@@ -29,6 +31,7 @@ export function ChatSheet({
     const [message, setMessage] = useState("");
     const [showCallScreen, setShowCallScreen] = useState(false);
     const [callType, setCallType] = useState<"audio" | "video" | null>(null);
+    const { callUser, localStream, remoteStream } = useWebRTC(userId);
 
     const handleSendMessage = () => {
         if (message.trim()) {
@@ -37,7 +40,7 @@ export function ChatSheet({
             setMessage("");
         }
     };
-    console.log("selectedContact", allmessage)
+    console.log("userIduserIduserId", userId)
     const isActiveNow = true;
     return (
         // <Sheet.Container>
@@ -82,16 +85,22 @@ export function ChatSheet({
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => {
-                                setCallType("audio");
-                                setShowCallScreen(true);
+                                if (selectedContact) {
+                                    callUser(String(selectedContact.id)); // initiate the call
+                                    setCallType("audio");
+                                    setShowCallScreen(true);
+                                }
                             }}
                             className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
                             <PhoneIcon className="w-5 h-5 text-zinc-600 dark:text-zinc-300" />
                         </button>
                         <button
                             onClick={() => {
-                                setCallType("video");
-                                setShowCallScreen(true);
+                                if (selectedContact) {
+                                    callUser(String(selectedContact.id));
+                                    setCallType("video");
+                                    setShowCallScreen(true);
+                                }
                             }}
                             className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
                             <VideoCameraIcon className="w-5 h-5 text-zinc-600 dark:text-zinc-300" />
@@ -160,6 +169,8 @@ export function ChatSheet({
                         setShowCallScreen(false);
                         setCallType(null);
                     }}
+                    localStream={localStream}
+                    remoteStream={remoteStream}
                 />
             )}
         </Sheet.Container>
