@@ -26,7 +26,7 @@ export function CallScreenSheet({
                 <div className="h-full w-full text-white flex flex-col items-center justify-center gap-6">
                     {/* Header */}
                     <div
-                        className="absolute top-[10%] md:top-[3%] inset-x-0 px-4 flex justify-end z-10"
+                        className="absolute top-[15%] md:top-[3%] inset-x-0 px-4 flex justify-end z-10"
                         style={{ paddingTop: 'env(safe-area-inset-top)' }}
                     >
                         {/* <button
