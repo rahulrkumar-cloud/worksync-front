@@ -270,6 +270,7 @@ import { useRef, useState } from "react";
 import { useButton, useDialog, useModal, useOverlay } from "react-aria";
 import { Sheet } from "react-modal-sheet";
 import { CallScreenSheet } from "../call/CallSheet";
+import { useWebRTC } from "@/src/helper/useWebRTC";
 
 interface Contact {
     id: number;
@@ -302,6 +303,8 @@ export function ContactListAndUserChatSheet({
 
     const [showCallScreen, setShowCallScreen] = useState(false);
     const [callType, setCallType] = useState<"audio" | "video" | null>(null);
+    const { callUser, localStream, remoteStream } = useWebRTC(userId);
+
     useModal();
 
     const handleSendMessage = () => {
@@ -448,8 +451,11 @@ export function ContactListAndUserChatSheet({
                                     <button
                                         className="p-3 rounded-full bg-green-500 hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 backdrop-blur-sm"
                                         onClick={() => {
-                                            setCallType("audio");
-                                            setShowCallScreen(true);
+                                            if (selectedContact) {
+                                                callUser(String(selectedContact.id)); // initiate the call
+                                                setCallType("audio");
+                                                setShowCallScreen(true);
+                                            }
                                         }}
                                     >
                                         <PhoneIcon className="w-5 h-5 text-white" />
@@ -458,8 +464,11 @@ export function ContactListAndUserChatSheet({
                                     <button
                                         className="p-3 rounded-full bg-blue-500 hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 backdrop-blur-sm"
                                         onClick={() => {
-                                            setCallType("video");
-                                            setShowCallScreen(true);
+                                            if (selectedContact) {
+                                                callUser(String(selectedContact.id));
+                                                setCallType("video");
+                                                setShowCallScreen(true);
+                                            }
                                         }}
                                     >
                                         <VideoCameraIcon className="w-5 h-5 text-white" />
@@ -538,8 +547,11 @@ export function ContactListAndUserChatSheet({
                         setShowCallScreen(false);
                         setCallType(null);
                     }}
+                    localStream={localStream}
+                    remoteStream={remoteStream}
                 />
             )}
+
 
         </Sheet.Container>
     );
