@@ -21,7 +21,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!currentUserId || socketRef.current) return;
 
-    const socket = io("https://worksync-socket.onrender.com", {
+    const socket = io("https://worksync-socket-j50v.onrender.com", {
       transports: ["websocket"],
       autoConnect: true,
       reconnection: true,
