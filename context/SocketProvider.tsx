@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState, useMemo } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "@/context/TokenProvider";
 
@@ -15,54 +15,63 @@ export const useSocket = () => useContext(SocketContext);
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const currentUserId = String(user?.id || "");
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const socketRef = useRef<Socket | null>(null); // <== Use ref to persist socket
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    if (!currentUserId) return;
+    if (!currentUserId || socketRef.current) return;
 
-    const newSocket = io("https://worksync-socket.onrender.com", {
+    const socket = io("https://worksync-socket.onrender.com", {
       transports: ["websocket"],
+      autoConnect: true,
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 3000,
-      // timeout: 10000, // optional: sets connect timeout
     });
 
-    setSocket(newSocket);
+    socketRef.current = socket;
 
-    // Logs
-    newSocket.on("connect", () => {
-      console.log(`✅ Connected to socket server: ${newSocket.id}`);
-      newSocket.emit("register", currentUserId);
+    // On successful connection
+    socket.on("connect", () => {
+      console.log(`✅ Connected to socket: ${socket.id}`);
+      socket.emit("register", currentUserId); // Register only once per connect
+      setIsConnected(true);
     });
 
-    newSocket.on("disconnect", (reason) => {
-      console.warn(`❌ Disconnected from socket server:`, reason);
+    socket.on("disconnect", (reason) => {
+      console.warn(`❌ Disconnected:`, reason);
+      setIsConnected(false);
     });
 
-    newSocket.on("connect_error", (error) => {
+    socket.on("connect_error", (error) => {
       console.error("🚨 Connection error:", error.message);
     });
 
-    newSocket.on("reconnect_attempt", (attempt) => {
+    socket.on("reconnect_attempt", (attempt) => {
       console.info(`🔁 Reconnect attempt #${attempt}`);
     });
 
-    // Send heartbeat every 60s (less than pingTimeout = 180s)
+    // Heartbeat to keep socket alive
     const heartbeatInterval = setInterval(() => {
-      if (newSocket.connected) {
+      if (socket.connected) {
         console.log("💓 Sending heartbeat");
-        newSocket.emit("heartbeat");
+        socket.emit("heartbeat");
       }
     }, 60000);
 
+    // Cleanup on unmount
     return () => {
       clearInterval(heartbeatInterval);
-      newSocket.disconnect();
+      socket.disconnect();
+      socketRef.current = null;
+      setIsConnected(false);
     };
   }, [currentUserId]);
 
-  const contextValue = useMemo(() => ({ socket }), [socket]);
+  const contextValue = useMemo(
+    () => ({ socket: socketRef.current }),
+    [isConnected] // triggers update only when connection state changes
+  );
 
   return (
     <SocketContext.Provider value={contextValue}>

@@ -261,7 +261,7 @@
 //     </Sheet.Container>
 //   );
 // }
-
+"use client"
 import { PhoneIcon, VideoCameraIcon } from "@heroicons/react/24/solid";
 import { Avatar } from "@nextui-org/react";
 import clsx from "clsx";
