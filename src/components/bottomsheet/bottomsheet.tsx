@@ -179,7 +179,7 @@ export default function MySheet() {
             senderId: currentUserId,
             currenttime: formattedTime,
         };
-
+console.log("messagesmessages",messages)
         setMessages((prev) => ({
             ...prev,
             [receiverId]: [...(prev[receiverId] || []), msgData],
